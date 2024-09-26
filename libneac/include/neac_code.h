@@ -13,7 +13,7 @@
 #include <stdlib.h>
 
 typedef struct nea_code {
-	bit_stream* bitstream;
+    bit_stream* bitstream;
 } neac_code;
 
 neac_code* neac_code_create(bit_stream* stream);

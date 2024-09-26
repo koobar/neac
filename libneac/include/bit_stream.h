@@ -10,10 +10,10 @@
 #include "neac_error.h"
 
 typedef struct bit_stream {
-	FILE* file;
-	uint32_t mode;
-	uint8_t buffer;
-	uint32_t buffer_position;
+    FILE* file;
+    uint32_t mode;
+    uint8_t buffer;
+    uint32_t buffer_position;
 
 } bit_stream;
 

@@ -16,10 +16,10 @@ static inline void bit_stream_write_buffer(bit_stream* stream) {
 }
 
 /*!
- * @brief			ビットストリームの領域を確保し、そのハンドルを返します。
- * @param *file		ビットストリームで扱うファイルのファイルハンドル
- * @param mode		ビットストリームのモード
- * @return			ビットストリームのハンドル
+ * @brief           ビットストリームの領域を確保し、そのハンドルを返します。
+ * @param *file     ビットストリームで扱うファイルのファイルハンドル
+ * @param mode      ビットストリームのモード
+ * @return          ビットストリームのハンドル
  */
 bit_stream* bit_stream_create(FILE* file, uint32_t mode) {
     bit_stream* stream = (bit_stream*)malloc(sizeof(bit_stream));
@@ -38,9 +38,9 @@ bit_stream* bit_stream_create(FILE* file, uint32_t mode) {
 }
 
 /*!
- * @brief			ビットストリームから1ビット読み込みます。
- * @param stream	ビットストリームのハンドル
- * @return			読み込まれたビット
+ * @brief           ビットストリームから1ビット読み込みます。
+ * @param stream    ビットストリームのハンドル
+ * @return          読み込まれたビット
  */
 bool bit_stream_read_bit(bit_stream* stream) {
     bool bit;
@@ -61,10 +61,10 @@ bool bit_stream_read_bit(bit_stream* stream) {
 }
 
 /*!
- * @brief			ビットストリームから任意ビット数の整数を読み込みます。
- * @param reader	ビットストリームのハンドル
- * @param bits		読み込む整数のビット数
- * @return			読み込まれた整数
+ * @brief           ビットストリームから任意ビット数の整数を読み込みます。
+ * @param reader    ビットストリームのハンドル
+ * @param bits      読み込む整数のビット数
+ * @return          読み込まれた整数
  */
 uint32_t bit_stream_read_uint(bit_stream* stream, uint32_t bits) {
     uint32_t value = 0, i;
@@ -82,9 +82,9 @@ uint32_t bit_stream_read_uint(bit_stream* stream, uint32_t bits) {
 }
 
 /*!
- * @brief			ビットストリームに1ビット書き込みます。
- * @param stream	ビットストリームのハンドル
- * @param bit		書き込むビット
+ * @brief           ビットストリームに1ビット書き込みます。
+ * @param stream    ビットストリームのハンドル
+ * @param bit       書き込むビット
  */
 void bit_stream_write_bit(bit_stream* stream, bool bit) {
     if (stream->buffer_position == 8) {
@@ -96,13 +96,13 @@ void bit_stream_write_bit(bit_stream* stream, bool bit) {
 }
 
 /*!
- * @brief			ビットストリームに任意ビット数の整数を書き込みます。
- * @param stream	ビットストリームのハンドル
- * @param value		書き込む整数
- * @param num_bits	書き込む整数のビット数
+ * @brief           ビットストリームに任意ビット数の整数を書き込みます。
+ * @param stream    ビットストリームのハンドル
+ * @param value     書き込む整数
+ * @param num_bits  書き込む整数のビット数
  */
 void bit_stream_write_uint(bit_stream* stream, uint32_t value, uint32_t num_bits) {
-    int32_t i;		/* uint32_t にすると、i >= 0 が永遠に成り立つため、無限ループになることに注意 */
+    int32_t i;      /* uint32_t にすると、i >= 0 が永遠に成り立つため、無限ループになることに注意 */
 
     if (stream->mode != BIT_STREAM_MODE_WRITE) {
         report_error(NEAC_ERROR_BIT_STREAM_NOT_WRITE_MODE);
