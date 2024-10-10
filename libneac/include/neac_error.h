@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NEAC_OKc                                            0x0000      /* エラーではないことを示す */
+#define NEAC_OK                                             0x0000      /* エラーではないことを示す */
 #define NEAC_ERROR_UNKNOWN                                  0xffff      /* 原因不明のエラーであることを示す */
 
 /* ファイル読み込みエラー */

@@ -7,6 +7,26 @@
 #include "wave_file_writer.h"
 #include "./include/path.h"
 
+static const char* tag_title;
+static const char* tag_album;
+static const char* tag_artist;
+static const char* tag_album_artist;
+static const char* tag_subtitle;
+static const char* tag_publisher;
+static const char* tag_composer;
+static const char* tag_songwriter;
+static const char* tag_conductor;
+static const char* tag_copyright;
+static const char* tag_genre;
+static const char* tag_comment;
+static uint16_t tag_year;
+static uint16_t tag_track_number;
+static uint16_t tag_track_count;
+static uint16_t tag_disc;
+static uint16_t tag_rate;
+
+static bool has_tag = false;
+
 /*!
  * @brief                           コマンドライン引数を解析します。
  * @param argc                      コマンドライン引数の数
@@ -71,6 +91,86 @@ static void parse_commandline_args(
         else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "-help") == 0) {
             *is_help_mode = true;
         }
+        else if (strcmp(argv[i], "--title") == 0) {
+            tag_title = argv[i + 1];
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--album") == 0) {
+            tag_album = argv[i + 1];
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--artist") == 0) {
+            tag_artist = argv[i + 1];
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--album-artist") == 0) {
+            tag_album_artist = argv[i + 1];
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--subtitle") == 0) {
+            tag_subtitle = argv[i + 1];
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--publisher") == 0) {
+            tag_publisher = argv[i + 1];
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--composer") == 0) {
+            tag_composer = argv[i + 1];
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--songwriter") == 0) {
+            tag_songwriter = argv[i + 1];
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--conductor") == 0) {
+            tag_conductor = argv[i + 1];
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--copyright") == 0) {
+            tag_copyright = argv[i + 1];
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--genre") == 0) {
+            tag_genre = argv[i + 1];
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--year") == 0) {
+            tag_year = (uint16_t)atoi(argv[i + 1]);
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--track-number") == 0) {
+            tag_track_number = (uint16_t)atoi(argv[i + 1]);
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--track-count") == 0) {
+            tag_track_count = (uint16_t)atoi(argv[i + 1]);
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--disc") == 0) {
+            tag_disc = (uint16_t)atoi(argv[i + 1]);
+            ++i;
+            has_tag = true;
+        }
+        else if (strcmp(argv[i], "--rate") == 0) {
+            tag_rate = (uint16_t)atoi(argv[i + 1]);
+            ++i;
+            has_tag = true;
+        }
     }
 }
 
@@ -110,8 +210,8 @@ static void print_logo(bool is_silent_mode) {
     print("NEAC: NEko Audio Codec", is_silent_mode);
     print("Copyright (c) 2024 koobar.", is_silent_mode);
     print_return(is_silent_mode);
-    print("Version: 0.1", is_silent_mode);
-    print("Build:   2024/09/26", is_silent_mode);
+    print("Version: 0.2", is_silent_mode);
+    print("Build:   2024/10/10", is_silent_mode);
     print_separator(is_silent_mode);
 }
 
@@ -130,6 +230,19 @@ static void print_usage() {
     printf("    -ms|-midside                Uses mid-side stereo. Compression rates are often improved.\n");
     printf("    -disable-simple-predictor   Disable 2-order simple predictor. Compression rates are often reduced.\n");
     printf("    -silent|-s                  Don't display any text.\n");
+    printf("    --title                     Set the title in tag information.\n");
+    printf("    --album                     Set the album in tag information.\n");
+    printf("    --artist                    Set the artist in tag information.\n");
+    printf("    --subtitle                  Set the subtitle in tag information.\n");
+    printf("    --publisher                 Set the publisher in tag information.\n");
+    printf("    --composer                  Set the composer in tag information.\n");
+    printf("    --songwriter                Set the songwriter in tag information.\n");
+    printf("    --conductor                 Set the conductor in tag information.\n");
+    printf("    --copyright                 Set the copyright notices in tag information.\n");
+    printf("    --year                      Set the year in tag information.\n");
+    printf("    --track-number              Set the track number in tag information.\n");
+    printf("    --track-count               Set the track count in tag information.\n");
+    printf("    --disc                      Set the disc number in tag information.\n");
     printf("    -h|-help                    Display this text.\n");
 }
 
@@ -218,6 +331,76 @@ static void print_format_info(neac_decoder* decoder, bool is_silent_mode) {
     free(buffer);
 }
 
+static void print_tag(neac_tag* tag, bool is_silent_mode) {
+    size_t buffer_size = sizeof(char) * 1024;
+    char* buffer = (char*)malloc(buffer_size);
+
+    if (buffer == NULL) {
+        return;
+    }
+
+    if (tag == NULL) {
+        free(buffer);
+        return;
+    }
+
+    sprintf_s(buffer, buffer_size, "[TAG INFORMATION]\0");
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Title:        %s\0", tag->title);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Album:        %s\0", tag->album);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Artist:       %s\0", tag->artist);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Album Artist: %s\0", tag->album_artist);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Subtitle:     %s\0", tag->subtitle);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Publisher:    %s\0", tag->publisher);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Composer:     %s\0", tag->composer);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Songwriter:   %s\0", tag->songwriter);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Conductor:    %s\0", tag->conductor);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Copyright:    %s\0", tag->copyright);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Comment:      %s\0", tag->comment);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Genre:        %s\0", tag->genre);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Year:         %d\0", tag->year);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Track number: %d\0", tag->track_number);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Track count:  %d\0", tag->track_count);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Disc number:  %d\0", tag->disc);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Rate:         %d\0", tag->rate);
+    print(buffer, is_silent_mode);
+
+    free(buffer);
+}
+
 /*!
  * @brief                   サイレントモードでない場合に限り、デコード結果の情報を表示します。
  * @param *decoder          デコーダのハンドル
@@ -276,6 +459,7 @@ static void encode(
     neac_encoder* encoder = NULL;
     uint32_t n, i;
     clock_t start, end;
+    neac_tag* tag;
 
     /* 古いファイルを削除 */
     remove(output);
@@ -285,6 +469,31 @@ static void encode(
 
     /* エンコードするファイルのサンプル数を取得 */
     n = wave_file_reader_get_num_samples(reader);
+
+    if (has_tag) {
+        tag = (neac_tag*)malloc(sizeof(neac_tag));
+        neac_tag_init(tag);
+        if (tag_title != NULL) tag->title = tag_title;
+        if (tag_album != NULL) tag->album = tag_album;
+        if (tag_artist != NULL) tag->artist = tag_artist;
+        if (tag_album_artist != NULL) tag->album_artist = tag_album_artist;
+        if (tag_subtitle != NULL) tag->subtitle = tag_subtitle;
+        if (tag_publisher != NULL) tag->publisher = tag_publisher;
+        if (tag_composer != NULL) tag->composer = tag_composer;
+        if (tag_songwriter != NULL) tag->songwriter = tag_songwriter;
+        if (tag_conductor != NULL) tag->conductor = tag_conductor;
+        if (tag_copyright != NULL) tag->copyright = tag_copyright;
+        if (tag_genre != NULL) tag->genre = tag_genre;
+        if (tag_comment != NULL) tag->comment = tag_comment;
+        tag->year = tag_year;
+        tag->track_number = tag_track_number;
+        tag->track_count = tag_track_count;
+        tag->disc = tag_disc;
+        tag->rate = tag_rate;
+    }
+    else {
+        tag = NULL;
+    }
 
     /* エンコードハンドルを作成して初期化 */
     encoder = neac_encoder_create_from_path(
@@ -296,7 +505,8 @@ static void encode(
         block_size,
         use_mid_side_stereo,
         disable_simple_predictor,
-        filter_taps);
+        filter_taps,
+        tag);
 
     /* エンコード所要時間の計測開始 */
     start = clock();
@@ -360,6 +570,9 @@ static void decode(const char* input, const char* output, bool is_silent_mode) {
 
     /* デコード結果の表示 */
     print_decode_result(decoder, output, start, end, is_silent_mode);
+    print_return(is_silent_mode);
+    print_return(is_silent_mode);
+    print_tag(decoder->tag, is_silent_mode);
     print_return(is_silent_mode);
 
     /* 後始末 */

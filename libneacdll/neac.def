@@ -1,0 +1,9 @@
+LIBRARY libneacdll
+EXPORTS
+	NeacInitLibrary			@1
+	NeacOpenFile			@2
+	NeacReadNextSample		@3
+	NeacGetSampleRate		@4
+	NeacGetBitsPerSample	@5
+	NeacGetNumChannels		@6
+	NeacCloseFile			@7

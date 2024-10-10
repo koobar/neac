@@ -86,6 +86,96 @@ static char* get_file_name_without_extension(const char* path) {
 }
 
 /*!
+ * @brief                   サイレントモードでない場合に限り、指定された文字列を出力します。
+ * @param *str              出力する文字列
+ * @param is_silent_mode    サイレントモードであるかどうかを示すフラグ
+ */
+static void print(const char* str, bool is_silent_mode) {
+    if (!is_silent_mode) {
+        printf("%s", str);
+        printf("\n");
+    }
+}
+
+/*!
+ * @brief                   サイレントモードでない場合に限り、改行を出力します。
+ * @param is_silent_mode    サイレントモードであるかどうかを示すフラグ
+ */
+static void print_return(bool is_silent_mode) {
+    print("", is_silent_mode);
+}
+
+static void print_tag(neac_tag* tag, bool is_silent_mode) {
+    size_t buffer_size = sizeof(char) * 1024;
+    char* buffer = (char*)malloc(buffer_size);
+
+    if (buffer == NULL) {
+        return;
+    }
+
+    if (tag == NULL) {
+        free(buffer);
+        return;
+    }
+
+    sprintf_s(buffer, buffer_size, "[TAG INFORMATION]\0");
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Title:        %s\0", tag->title);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Album:        %s\0", tag->album);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Artist:       %s\0", tag->artist);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Album Artist: %s\0", tag->album_artist);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Subtitle:     %s\0", tag->subtitle);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Publisher:    %s\0", tag->publisher);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Composer:     %s\0", tag->composer);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Songwriter:   %s\0", tag->songwriter);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Conductor:    %s\0", tag->conductor);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Copyright:    %s\0", tag->copyright);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Comment:      %s\0", tag->comment);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Genre:        %s\0", tag->genre);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Year:         %d\0", tag->year);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Track number: %d\0", tag->track_number);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Track count:  %d\0", tag->track_count);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Disc number:  %d\0", tag->disc);
+    print(buffer, is_silent_mode);
+
+    sprintf_s(buffer, buffer_size, "Rate:         %d\0", tag->rate);
+    print(buffer, is_silent_mode);
+
+    free(buffer);
+}
+
+/*!
  * @brief           デコードを行います。
  * @param input     入力ファイルのパス
  * @param output    出力ファイルのパス
@@ -108,6 +198,8 @@ static void decode(const char* input, const char* output) {
 
     /* サンプル数を設定 */
     wave_file_writer_begin_write(writer);
+    
+    printf("Now Decoding...");
 
     /* デコード処理 */
     for (i = 0; i < decoder->num_total_samples; ++i) {
@@ -115,6 +207,17 @@ static void decode(const char* input, const char* output) {
     }
     wave_file_writer_end_write(writer);
     wave_file_writer_close(writer);
+
+    printf("Decoding process completed successfully!\n");
+    printf("\n");
+
+    if (decoder->tag != NULL) {
+        print_tag(decoder->tag, false);
+        print_return(false);
+        print_return(false);
+    }
+
+    neac_decoder_free(decoder);
 }
 
 static void play(const char* input) {
@@ -138,12 +241,8 @@ static void play(const char* input) {
     strcat_s(output, buffer_size, name);
     strcat_s(output, buffer_size, "_decoded.wav");
 
-    printf("Now Decoding...");
-
     /* デコード */
     decode(input, output);
-
-    printf("Complete!\n");
 
     printf("PLAYING: %s\n", output);
     printf("To stop, press Ctrl+C.\n");

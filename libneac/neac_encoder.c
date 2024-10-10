@@ -28,6 +28,9 @@ static void write_header(neac_encoder* encoder) {
     write_bool(encoder->output_file, encoder->use_mid_side_stereo);
     write_bool(encoder->output_file, encoder->disable_simple_predictor);
     write_uint32(encoder->output_file, encoder->num_blocks);
+
+    /* タグ情報を書き込む */
+    neac_tag_write(encoder->output_file, encoder->tag);
 }
 
 #pragma endregion
@@ -172,6 +175,7 @@ static uint32_t compute_block_count(uint32_t num_samples, uint8_t num_channels, 
  * @param use_mid_side_stereo       ミッドサイドステレオを使用するかどうかを示すフラグ
  * @param disable_simple_predictor  シンプル予測器を無効化するかどうかを示すフラグ
  * @param filter_taps               LMSフィルタのタップ数
+ * @param *tag                      タグ情報
  */
 static void init(
     neac_encoder* encoder, 
@@ -183,7 +187,8 @@ static void init(
     uint16_t block_size, 
     bool use_mid_side_stereo, 
     bool disable_simple_predictor,
-    uint8_t filter_taps) {
+    uint8_t filter_taps,
+    neac_tag* tag) {
     uint8_t ch;
 
     /* ファイルを開いてビットストリームを初期化する */
@@ -205,6 +210,7 @@ static void init(
     encoder->current_block = (neac_block*)malloc(sizeof(neac_block));
     encoder->current_sub_block_channel = 0;
     encoder->current_sub_block_offset = 0;
+    encoder->tag = tag;
 
     /* ブロックを初期化 */
     neac_block_init(encoder->current_block, block_size, num_channels);
@@ -220,7 +226,7 @@ static void init(
         report_error(NEAC_ERROR_ENCODER_CANNOT_ALLOCATE_MEMORY);
     }
 
-    /* ヘッダ部を書き込む。 */
+    /* ヘッダ部を書き込む */
     write_header(encoder);
 }
 
@@ -236,6 +242,7 @@ static void init(
  * @param use_mid_side_stereo       ミッドサイドステレオを使用するかどうかを示すフラグ
  * @param disable_simple_predictor  シンプル予測器を無効化するかどうかを示すフラグ
  * @param filter_taps               LMSフィルタのタップ数
+ * @param *tag                      タグ情報
  */
 static void init_from_path(
     neac_encoder* encoder, 
@@ -247,7 +254,8 @@ static void init_from_path(
     uint16_t block_size, 
     bool use_mid_side_stereo,
     bool disable_simple_predictor,
-    uint8_t filter_taps) {
+    uint8_t filter_taps,
+    neac_tag* tag) {
     FILE* fp;
     errno_t err;
 
@@ -269,7 +277,8 @@ static void init_from_path(
         block_size, 
         use_mid_side_stereo,
         disable_simple_predictor,
-        filter_taps);
+        filter_taps,
+        tag);
 }
 
 /*!
@@ -283,6 +292,7 @@ static void init_from_path(
  * @param use_mid_side_stereo       ミッドサイドステレオを使用するかどうかを示すフラグ
  * @param disable_simple_predictor  シンプル予測器を無効化するかどうかを示すフラグ
  * @param filter_taps               LMSフィルタのタップ数
+ * @param *tag                      タグ情報
  */
 neac_encoder* neac_encoder_create(
     FILE* file,
@@ -293,7 +303,8 @@ neac_encoder* neac_encoder_create(
     uint16_t block_size,
     bool use_mid_side_stereo,
     bool disable_simple_predictor,
-    uint8_t filter_taps) {
+    uint8_t filter_taps,
+    neac_tag* tag) {
     neac_encoder* result = (neac_encoder*)malloc(sizeof(neac_encoder));
 
     if (result == NULL) {
@@ -311,7 +322,8 @@ neac_encoder* neac_encoder_create(
         block_size,
         use_mid_side_stereo,
         disable_simple_predictor,
-        filter_taps);
+        filter_taps,
+        tag);
 
     return result;
 }
@@ -327,6 +339,7 @@ neac_encoder* neac_encoder_create(
  * @param use_mid_side_stereo       ミッドサイドステレオを使用するかどうかを示すフラグ
  * @param disable_simple_predictor  シンプル予測器を無効化するかどうかを示すフラグ
  * @param filter_taps               LMSフィルタのタップ数
+ * @param *tag                      タグ情報
  */
 neac_encoder* neac_encoder_create_from_path(
     const char* path,
@@ -337,7 +350,8 @@ neac_encoder* neac_encoder_create_from_path(
     uint16_t block_size,
     bool use_mid_side_stereo,
     bool disable_simple_predictor,
-    uint8_t filter_taps) {
+    uint8_t filter_taps,
+    neac_tag* tag) {
     neac_encoder* result = (neac_encoder*)malloc(sizeof(neac_encoder));
 
     if (result == NULL) {
@@ -355,7 +369,8 @@ neac_encoder* neac_encoder_create_from_path(
         block_size,
         use_mid_side_stereo,
         disable_simple_predictor,
-        filter_taps);
+        filter_taps,
+        tag);
 
     return result;
 }

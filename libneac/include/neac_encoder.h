@@ -9,6 +9,7 @@
 #include "neac_code.h"
 #include "neac_error.h"
 #include "neac_sub_block.h"
+#include "neac_tag.h"
 #include "signal.h"
 #include "simple_predictor.h"
 #include <stdbool.h>
@@ -36,6 +37,7 @@ typedef struct neac_encoder {
     lms** lms_filters;
     simple_predictor** simple_predictors;
 
+    neac_tag* tag;
     neac_code* coder;
     neac_block* current_block;
     uint8_t current_sub_block_channel;
@@ -44,7 +46,7 @@ typedef struct neac_encoder {
 
 /*!
  * @brief                           指定された設定で、エンコーダのハンドルを生成します。
- * @param file                      出力先のファイルハンドル
+ * @param *file                      出力先のファイルハンドル
  * @param sample_rate               サンプリング周波数
  * @param bits_per_sample           量子化ビット数
  * @param num_channels              チャンネル数
@@ -53,6 +55,7 @@ typedef struct neac_encoder {
  * @param use_mid_side_stereo       ミッドサイドステレオを使用するかどうかを示すフラグ
  * @param disable_simple_predictor  シンプル予測器を無効化するかどうかを示すフラグ
  * @param filter_taps               LMSフィルタのタップ数
+ * @param *tag                      タグ情報
  */
 neac_encoder* neac_encoder_create(
     FILE* file,
@@ -63,11 +66,12 @@ neac_encoder* neac_encoder_create(
     uint16_t block_size,
     bool use_mid_side_stereo,
     bool disable_simple_predictor,
-    uint8_t filter_taps);
+    uint8_t filter_taps,
+    neac_tag* tag);
 
 /*!
  * @brief                           指定された設定で、エンコーダのハンドルを生成します。
- * @param path                      出力先のパス
+ * @param *path                      出力先のパス
  * @param sample_rate               サンプリング周波数
  * @param bits_per_sample           量子化ビット数
  * @param num_channels              チャンネル数
@@ -76,6 +80,7 @@ neac_encoder* neac_encoder_create(
  * @param use_mid_side_stereo       ミッドサイドステレオを使用するかどうかを示すフラグ
  * @param disable_simple_predictor  シンプル予測器を無効化するかどうかを示すフラグ
  * @param filter_taps               LMSフィルタのタップ数
+ * @param *tag                      タグ情報
  */
 neac_encoder* neac_encoder_create_from_path(
     const char* path,
@@ -86,7 +91,8 @@ neac_encoder* neac_encoder_create_from_path(
     uint16_t block_size,
     bool use_mid_side_stereo,
     bool disable_simple_predictor,
-    uint8_t filter_taps);
+    uint8_t filter_taps,
+    neac_tag* tag);
 
 /*!
  * @brief           エンコーダを解放します。

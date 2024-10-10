@@ -8,6 +8,7 @@
 #include "neac_block.h"
 #include "neac_code.h"
 #include "neac_sub_block.h"
+#include "neac_tag.h"
 #include "simple_predictor.h"
 #include <stdbool.h>
 #include <stdint.h>
@@ -35,6 +36,7 @@ typedef struct neac_decoder {
     lms** lms_filters;
     simple_predictor** simple_predictors;
 
+    neac_tag* tag;
     neac_code* coder;
     neac_block* current_block;
     uint8_t current_read_sub_block_channel;

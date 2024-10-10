@@ -65,6 +65,26 @@ char read_char(FILE* file) {
 }
 
 /*!
+ * @brief       指定されたファイルポインタが示すファイルからASCII文字を読み込みます。
+ * @param file  ファイルポインタ
+ * @return      読み込まれた値
+ */
+const char* read_string(FILE* file, uint32_t bytes) {
+    uint32_t i;
+    char* result = (char*)malloc(bytes);
+
+    if (result == NULL) {
+        return NULL;
+    }
+
+    for (i = 0; i < bytes; ++i) {
+        result[i] = read_char(file);
+    }
+
+    return result;
+}
+
+/*!
  * @brief       指定されたファイルポインタが示すファイルから8ビット整数を読み込みます。
  * @param file  ファイルポインタ
  * @return      読み込まれた値
@@ -145,6 +165,20 @@ void write_char(FILE* file, const char value) {
     if (actual_write < 1) {
         report_error(NEAC_ERROR_FILE_ACCESS_FAILED_TO_WRITE_CHAR);
     }
+}
+
+/*!
+ * @brief       指定されたファイルポインタが示すファイルに文字列を書き込む。
+ * @param file  ファイルポインタ
+ * @param value 書き込む値
+ */
+void write_string(FILE* file, const char* value, uint32_t bytes) {
+    uint8_t i;
+
+    for (i = 0; i < bytes - 1; ++i) {
+        write_char(file, value[i]);
+    }
+    write_char(file, '\0');         /* 末端文字 */
 }
 
 /*!

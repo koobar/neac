@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 /*!
  * @brief       指定されたファイルポインタが示すファイルから、真偽値を読み込みます。
@@ -33,6 +34,13 @@ int32_t read_int32(FILE* file);
  * @return      読み込まれた値
  */
 char read_char(FILE* file);
+
+/*!
+ * @brief       指定されたファイルポインタが示すファイルから文字列を読み込みます。
+ * @param file  ファイルポインタ
+ * @return      読み込まれた値
+ */
+const char* read_string(FILE* file, uint32_t bytes);
 
 /*!
  * @brief       指定されたファイルポインタが示すファイルから8ビット整数を読み込みます。
@@ -68,6 +76,13 @@ void write_bool(FILE* file, const bool value);
  * @param value 書き込む値
  */
 void write_char(FILE* file, const char value);
+
+/*!
+ * @brief       指定されたファイルポインタが示すファイルに文字列を書き込む。
+ * @param file  ファイルポインタ
+ * @param value 書き込む値
+ */
+void write_string(FILE* file, const char* value, uint32_t bytes);
 
 /*!
  * @brief       指定されたファイルポインタが示すファイルに8ビット整数を書き込む。

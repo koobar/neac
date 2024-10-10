@@ -1,6 +1,6 @@
 #include "./include/neac_decoder.h"
 
-const static uint8_t supported_format_versions[1] = { 0x01 };
+const static uint8_t supported_format_versions[1] = { 0x02 };
 
 #pragma region データ読み込み
 
@@ -51,6 +51,9 @@ static void read_header(neac_decoder* decoder) {
         decoder->use_mid_side_stereo = read_bool(decoder->file);
         decoder->disable_simple_predictor = read_bool(decoder->file);
         decoder->num_blocks = read_uint32(decoder->file);
+
+        /* タグ情報を読み込む */
+        neac_tag_read(decoder->file, &decoder->tag);
     }
     else {
         /* マジックナンバーが不正な値である旨のエラーをレポートする */
