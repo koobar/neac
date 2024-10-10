@@ -233,16 +233,20 @@ static void print_usage() {
     printf("    --title                     Set the title in tag information.\n");
     printf("    --album                     Set the album in tag information.\n");
     printf("    --artist                    Set the artist in tag information.\n");
+    printf("    --album-artist              Set the album artist in tag information.\n");
     printf("    --subtitle                  Set the subtitle in tag information.\n");
     printf("    --publisher                 Set the publisher in tag information.\n");
     printf("    --composer                  Set the composer in tag information.\n");
     printf("    --songwriter                Set the songwriter in tag information.\n");
     printf("    --conductor                 Set the conductor in tag information.\n");
     printf("    --copyright                 Set the copyright notices in tag information.\n");
+    printf("    --comment                   Set the comment in tag information.\n");
+    printf("    --genre                     Set the genre in tag information.\n");
     printf("    --year                      Set the year in tag information.\n");
     printf("    --track-number              Set the track number in tag information.\n");
     printf("    --track-count               Set the track count in tag information.\n");
     printf("    --disc                      Set the disc number in tag information.\n");
+    printf("    --rate                      Set the rate in tag information.\n");
     printf("    -h|-help                    Display this text.\n");
 }
 
